@@ -105,7 +105,7 @@ jobs:
       - name: Create/update release and tag
         run: |
             gh release delete dev-${{ steps.current-version.outputs.VERSION }} -y || true
-            gh release create dev-${{ steps.current-version.outputs.VERSION }} ./dist/taipy-${{ steps.current-version.outputs.VERSION }}.tar.gz --draft --prerelease --notes "Release Draft ${{ steps.current-version.outputs.VERSION }}"
+            gh release create dev-${{ steps.current-version.outputs.VERSION }} ./dist/taipy-gui-${{ steps.current-version.outputs.VERSION }}.tar.gz --draft --prerelease --notes "Release Draft ${{ steps.current-version.outputs.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
