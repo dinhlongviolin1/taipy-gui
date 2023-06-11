@@ -101,12 +101,17 @@ jobs:
 
       - name: Build package
         run: python setup.py build_py && python -m build
+      
+      - name: Extract commit hash
+        shell: bash
+        run: echo "HASH=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        id: extract_hash
 
       - name: Create/update release and tag
         run: |
             gh release delete dev-${{ steps.current-version.outputs.VERSION }} -y || true
             echo "Creating release dev-${{ steps.current-version.outputs.VERSION }}"
-            gh release create dev-${{ steps.current-version.outputs.VERSION }} ./dist/taipy-gui-${{ steps.current-version.outputs.VERSION }}.tar.gz --draft --prerelease --notes "Release Draft ${{ steps.current-version.outputs.VERSION }}"
+            gh release create dev-${{ steps.current-version.outputs.VERSION }} ./dist/taipy-gui-${{ steps.current-version.outputs.VERSION }}.tar.gz --target ${{ steps.extract_hash.outputs.HASH }} --draft --prerelease --notes "Release Draft ${{ steps.current-version.outputs.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
