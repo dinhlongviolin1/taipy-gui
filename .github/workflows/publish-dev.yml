@@ -25,6 +25,18 @@ jobs:
       - name: Extract Github Tag Version
         id: vars
         run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+      
+      - name: Extract branch name
+        shell: bash
+        run: echo "BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: Checkout latest from branch
+        uses: actions/checkout@v2
+        with:
+          repository: dinhlongviolin1/taipy-gui
+          ref: ${{ steps.extract_branch.outputs.BRANCH }}
+          path: './latest'
 
       - name: Validate Github Tag Version
         run: |
@@ -33,8 +45,15 @@ jobs:
           SUFFIX = 'dev'
           if SUFFIX not in sys.argv[1]:
               raise ValueError(f'Tag {sys.argv[1]} does not contain suffix {SUFFIX}')
+          with open(f\"latest{os.sep}src{os.sep}taipy{os.sep}gui{os.sep}version.json\") as version_file:
+              version_o = json.load(version_file)
+          version = f'{version_o.get(\"major\")}.{version_o.get(\"minor\")}.{version_o.get(\"patch\")}'
+          if vext := version_o.get(\"ext\"):
+              version = f'{version}.{'dev' + str(int(vext.replace('dev', '')) - 1)}'
+          if version != sys.argv[1]:
+              raise ValueError(f'Tag {sys.argv[1]} is not the latest dev version of branch {sys.argv[2]}')
           """ > /tmp/check.py
-          python /tmp/check.py "${{ steps.vars.outputs.tag }}"
+          python /tmp/check.py "${{ steps.vars.outputs.tag }}" ${{ steps.extract_branch.outputs.BRANCH }}
 
       - name: Ensure package version has 'dev' suffix
         run: |
