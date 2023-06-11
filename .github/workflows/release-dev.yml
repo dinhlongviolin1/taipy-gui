@@ -101,6 +101,27 @@ jobs:
 
       - name: Build package
         run: python setup.py build_py && python -m build
+      
+       name: Install the package and tests it
+        run: |
+          # Install package
+          echo "Installing package..."
+          pip install ./dist/taipy-gui-${{ steps.current-version.outputs.VERSION }}.tar.gz
+          rm -r src
+
+          # Install test packages
+          echo "Installing test packages..."
+          pip install pytest pytest-mock playwright pytest-playwright pytest-timeout testbook
+          pip install ipython ipykernel
+          ipython kernel install --name "python3" --user
+          playwright install chromium --with-deps
+
+          # Run tests
+          echo "running pytest"
+          pytest -s
+
+          echo "running test import tp"
+          python -c "import taipy as tp; tp.Gui"
 
       - name: Create/update release and tag
         run: |
