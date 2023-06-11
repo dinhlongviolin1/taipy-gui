@@ -53,7 +53,7 @@ jobs:
           if version != sys.argv[1]:
               raise ValueError(f'Tag {sys.argv[1]} is not the latest dev version of branch {sys.argv[2]}')
           """ > /tmp/check.py
-          python /tmp/check.py "${{ steps.vars.outputs.tag }}" ${{ steps.extract_branch.outputs.BRANCH }}
+          python /tmp/check.py "${{ steps.vars.outputs.tag }}" "${{ steps.extract_branch.outputs.BRANCH }}"
 
       - name: Ensure package version has 'dev' suffix
         run: |
