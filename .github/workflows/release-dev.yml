@@ -131,8 +131,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Reset setup.py file
-        run: mv setup.taipy.py setup.py
+      - name: Reset changes
+        run: |
+              git reset --hard HEAD
+              git clean -fdx
       
       - name: Increase dev version
         run: |
