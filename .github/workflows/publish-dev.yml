@@ -49,7 +49,8 @@ jobs:
               version_o = json.load(version_file)
           version = f'{version_o.get(\"major\")}.{version_o.get(\"minor\")}.{version_o.get(\"patch\")}'
           if vext := version_o.get(\"ext\"):
-              version = f'{version}.{'dev' + str(int(vext.replace('dev', '')) - 1)}'
+              vext = 'dev' + str(int(vext.replace('dev', '')) - 1)
+              version = f'{version}.{vext}'
           if version != sys.argv[1]:
               raise ValueError(f'Tag {sys.argv[1]} is not the latest dev version of branch {sys.argv[2]}')
           """ > /tmp/check.py
