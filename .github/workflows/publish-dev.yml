@@ -28,7 +28,9 @@ jobs:
       
       - name: Extract branch name
         shell: bash
-        run: echo "BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+        run: |
+            raw=$(git branch -r --contains ${GITHUB_REF#refs/heads/})
+            echo "BRANCH=${raw##*/}" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Checkout latest from branch

@@ -136,6 +136,7 @@ jobs:
               git clean -fdx
       
       - name: Increase dev version
+        id: new-version
         run: |
               echo """
               import json, os
@@ -149,9 +150,15 @@ jobs:
                       text = r.read().replace(prev_version, new_version)
                   with open(f'src{os.sep}taipy{os.sep}gui{os.sep}version.json', mode='w') as w:
                       w.write(text)
+                  with open(f\"src{os.sep}taipy{os.sep}gui{os.sep}version.json\") as version_file:
+                      version_o = json.load(version_file)
+                  version = f'{version_o.get(\"major\")}.{version_o.get(\"minor\")}.{version_o.get(\"patch\")}'
+                  if vext := version_o.get(\"ext\"):
+                      version = f'{version}.{vext}'
+                  print(f'VERSION={version}')
               """ > /tmp/increase_dev_version.py
-              python /tmp/increase_dev_version.py
+              python /tmp/increase_dev_version.py >> $GITHUB_OUTPUT
         
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Update version to ${{ steps.current-version.outputs.VERSION }}
+          commit_message: Update version to ${{ steps.new-version.outputs.VERSION }}
