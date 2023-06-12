@@ -29,15 +29,17 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-            raw=$(git branch -r --contains ${{ github.ref }})
-            echo "BRANCH=${raw##*/}" >> $GITHUB_OUTPUT
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=$(echo ${raw##*/} | tr [:upper:] [:lower:])
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+          echo "Branch is $branch."
         id: extract_branch
 
       - name: Checkout latest from branch
         uses: actions/checkout@v2
         with:
           repository: dinhlongviolin1/taipy-gui
-          ref: ${{ steps.extract_branch.outputs.BRANCH }}
+          ref: ${{ steps.extract_branch.outputs.branch }}
           path: './latest'
 
       - name: Validate Github Tag Version
@@ -56,7 +58,7 @@ jobs:
           if version != sys.argv[1]:
               raise ValueError(f'Tag {sys.argv[1]} is not the latest dev version of branch {sys.argv[2]}')
           """ > /tmp/check.py
-          python /tmp/check.py "${{ steps.vars.outputs.tag }}" "${{ steps.extract_branch.outputs.BRANCH }}"
+          python /tmp/check.py "${{ steps.vars.outputs.tag }}" "${{ steps.extract_branch.outputs.branch }}"
 
       - name: Ensure package version has 'dev' suffix
         run: |
