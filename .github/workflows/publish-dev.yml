@@ -29,6 +29,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
+          git fetch origin
+          git branch -r --contains ${{ github.ref }}
           raw=$(git branch -r --contains ${{ github.ref }})
           branch=$(echo ${raw##*/} | tr [:upper:] [:lower:])
           echo "branch=$branch" >> $GITHUB_OUTPUT
