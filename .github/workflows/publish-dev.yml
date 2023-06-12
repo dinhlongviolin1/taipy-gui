@@ -41,7 +41,7 @@ jobs:
       - name: Validate Github Tag Version
         run: |
           echo """
-          import sys
+          import json, sys, os
           SUFFIX = 'dev'
           if SUFFIX not in sys.argv[1]:
               raise ValueError(f'Tag {sys.argv[1]} does not contain suffix {SUFFIX}')
@@ -90,6 +90,8 @@ jobs:
       - name: Download assets from github release tag
         run: |
           gh release download ${{ github.event.inputs.version }} --dir dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify there is a release asset
         run: |
@@ -109,6 +111,8 @@ jobs:
       - name: Download assets from tag
         run: |
           gh release download ${{ github.event.inputs.version }} --dir dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
